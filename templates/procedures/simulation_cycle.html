@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Simulation Cycle - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Procedure: Simulation Cycle</h2>
+        <p class="text-muted">simulation_cycle()</p>
+    </div>
+    <div class="card-body">
+        <p class="lead">Run a simulation cycle to advance the state of the system.</p>
+        
+        <form method="POST" action="{{ url_for('simulation_cycle') }}">
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Next Step</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

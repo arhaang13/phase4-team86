@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Route Summary - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>View: Route Summary</h2>
+        <p class="text-muted mb-0">route_summary()</p>
+    </div>
+    <div class="card-body">
+        {% if results and results|length > 0 %}
+            <div class="table-responsive">
+                <table class="table data-table">
+                    <thead>
+                        <tr>
+                            <th>Route</th>
+                            <th>Number of Legs</th>
+                            <th>Leg Sequence</th>
+                            <th>Route Length</th>
+                            <th>Number of Flights</th>
+                            <th>Flight List</th>
+                            <th>Airport Sequence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                            <tr>
+                                <td>{{ row.route }}</td>
+                                <td>{{ row.num_legs }}</td>
+                                <td>{{ row.leg_sequence }}</td>
+                                <td>{{ row.route_length }}</td>
+                                <td>{{ row.num_flights }}</td>
+                                <td>{{ row.flight_list }}</td>
+                                <td>{{ row.airport_sequence }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">No routes are available for summary.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

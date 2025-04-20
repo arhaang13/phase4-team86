@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Assign Pilot - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Procedure: Assign Pilot</h2>
+        <p class="text-muted">assign_pilot()</p>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('assign_pilot') }}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="flight_id" class="form-label">Flight ID</label>
+                    <select class="form-select" id="flight_id" name="flight_id" required>
+                        <option value="">Select Flight</option>
+                        {% for flight in flights %}
+                        <option value="{{ flight.flightID }}">{{ flight.flightID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="person_id" class="form-label">Person ID</label>
+                    <select class="form-select" id="person_id" name="person_id" required>
+                        <option value="">Select Pilot</option>
+                        {% for pilot in pilots %}
+                        <option value="{{ pilot.personID }}">{{ pilot.personID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

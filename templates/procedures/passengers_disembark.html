@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Passengers Disembark - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Procedure: Passengers Disembark</h2>
+        <p class="text-muted">passengers_disembark()</p>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('passengers_disembark') }}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="flight_id" class="form-label">Flight ID</label>
+                    <select class="form-select" id="flight_id" name="flight_id" required>
+                        <option value="">Select Flight</option>
+                        {% for flight in flights %}
+                        <option value="{{ flight.flightID }}">{{ flight.flightID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Disembark</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

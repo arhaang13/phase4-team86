@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Airplane{% endblock %}
+
+{% block content %}
+<h2>Add Airplane</h2>
+
+<form method="POST" action="{{ url_for('add_airplane') }}">
+    <div class="form-group">
+        <label for="airline_id">Airline ID</label>
+        <input type="text" class="form-control" id="airline_id" name="airline_id" placeholder="e.g. United" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="tail_num">Tail Num</label>
+        <input type="text" class="form-control" id="tail_num" name="tail_num" placeholder="e.g. nk780b" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="seat_capacity">Seat Capacity</label>
+        <input type="number" class="form-control" id="seat_capacity" name="seat_capacity" placeholder="e.g. 120" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="speed">Speed</label>
+        <input type="number" class="form-control" id="speed" name="speed" placeholder="e.g. 345" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="location_id">Location ID</label>
+        <input type="text" class="form-control" id="location_id" name="location_id" placeholder="e.g. port_190" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="plane_type">Plane Type</label>
+        <select class="form-control" id="plane_type" name="plane_type" required>
+            <option value="">Select Type</option>
+            <option value="boeing">Boeing</option>
+            <option value="airbus">Airbus</option>
+        </select>
+    </div>
+    
+    <div class="form-group boeing-fields" style="display: none;">
+        <label for="maintained">Maintained</label>
+        <select class="form-control" id="maintained" name="maintained">
+            <option value="">NULL</option>
+            <option value="TRUE">TRUE</option>
+            <option value="FALSE">FALSE</option>
+        </select>
+    </div>
+    
+    <div class="form-group boeing-fields" style="display: none;">
+        <label for="model">Model</label>
+        <input type="text" class="form-control" id="model" name="model" placeholder="NULL">
+    </div>
+    
+    <div class="form-group airbus-fields" style="display: none;">
+        <label for="neo">Neo</label>
+        <select class="form-control" id="neo" name="neo">
+            <option value="">NULL</option>
+            <option value="TRUE">TRUE</option>
+            <option value="FALSE">FALSE</option>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Add</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const planeTypeSelect = document.getElementById('plane_type');
+        const boeingFields = document.querySelectorAll('.boeing-fields');
+        const airbusFields = document.querySelectorAll('.airbus-fields');
+        
+        planeTypeSelect.addEventListener('change', function() {
+            const planeType = this.value.toLowerCase();
+            
+            boeingFields.forEach(field => {
+                field.style.display = planeType === 'boeing' ? 'block' : 'none';
+            });
+            
+            airbusFields.forEach(field => {
+                field.style.display = planeType === 'airbus' ? 'block' : 'none';
+            });
+            
+            // Reset field values when changing plane type
+            if (planeType !== 'boeing') {
+                document.getElementById('maintained').value = '';
+                document.getElementById('model').value = '';
+            }
+            
+            if (planeType !== 'airbus') {
+                document.getElementById('neo').value = '';
+            }
+        });
+    });
+</script>
+{% endblock %}

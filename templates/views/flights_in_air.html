@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Flights in the Air{% endblock %}
+
+{% block content %}
+<h2>Flights in the Air</h2>
+
+{% if results and results|length > 0 %}
+    <table>
+        <thead>
+            <tr>
+                <th>departing_from</th>
+                <th>arriving_at</th>
+                <th>num_flights</th>
+                <th>flight_list</th>
+                <th>earliest_arrival</th>
+                <th>latest_arrival</th>
+                <th>airplane_list</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in results %}
+                <tr>
+                    <td>{{ row.departing_from }}</td>
+                    <td>{{ row.arriving_at }}</td>
+                    <td>{{ row.num_flights }}</td>
+                    <td>{{ row.flight_list }}</td>
+                    <td>{{ row.earliest_arrival }}</td>
+                    <td>{{ row.latest_arrival }}</td>
+                    <td>{{ row.airplane_list }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">No flights are currently in the air.</div>
+{% endif %}
+
+<div style="margin-top: 20px;">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+</div>
+{% endblock %}

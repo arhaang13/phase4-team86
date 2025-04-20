@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Flight Takeoff{% endblock %}
+
+{% block content %}
+<h2>Flight Takeoff</h2>
+
+<form method="POST" action="{{ url_for('flight_takeoff') }}">
+    <div class="form-group">
+        <label for="flight_id">flightID</label>
+        <select class="form-control" id="flight_id" name="flight_id" required>
+            <option value="">Select Flight</option>
+            {% for flight in flights %}
+                <option value="{{ flight.flightID }}">{{ flight.flightID }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Takeoff</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

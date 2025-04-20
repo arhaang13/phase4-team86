@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Person - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Procedure: Add Person</h2>
+        <p class="text-muted">add_person()</p>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('add_person') }}">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="person_id" class="form-label">Person ID</label>
+                    <input type="text" class="form-control" id="person_id" name="person_id" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="location_id" class="form-label">Location ID</label>
+                    <select class="form-select" id="location_id" name="location_id" required>
+                        <option value="">Select Location</option>
+                        {% for location in locations %}
+                        <option value="{{ location.locationID }}">{{ location.locationID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label d-block">Person Type</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="person_type" id="pilot_type" value="pilot" checked>
+                        <label class="form-check-label" for="pilot_type">Pilot</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="person_type" id="passenger_type" value="passenger">
+                        <label class="form-check-label" for="passenger_type">Passenger</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pilot-specific fields -->
+            <div class="row pilot-fields">
+                <div class="col-md-6 mb-3">
+                    <label for="tax_id" class="form-label">Tax ID</label>
+                    <input type="text" class="form-control" id="tax_id" name="tax_id" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="experience" class="form-label">Experience</label>
+                    <input type="number" class="form-control" id="experience" name="experience" min="0" required>
+                </div>
+            </div>
+            
+            <!-- Passenger-specific fields -->
+            <div class="row passenger-fields" style="display: none;">
+                <div class="col-md-6 mb-3">
+                    <label for="miles" class="form-label">Miles</label>
+                    <input type="number" class="form-control" id="miles" name="miles" min="0">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="funds" class="form-label">Funds</label>
+                    <input type="number" class="form-control" id="funds" name="funds" min="0">
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pilotType = document.getElementById('pilot_type');
+        const passengerType = document.getElementById('passenger_type');
+        const pilotFields = document.querySelector('.pilot-fields');
+        const passengerFields = document.querySelector('.passenger-fields');
+        
+        // Function to toggle fields based on selected type
+        function toggleFields() {
+            if (pilotType.checked) {
+                pilotFields.style.display = 'flex';
+                passengerFields.style.display = 'none';
+                // Make pilot fields required
+                document.getElementById('tax_id').required = true;
+                document.getElementById('experience').required = true;
+                // Make passenger fields not required
+                document.getElementById('miles').required = false;
+                document.getElementById('funds').required = false;
+                // Clear passenger fields
+                document.getElementById('miles').value = '';
+                document.getElementById('funds').value = '';
+            } else {
+                pilotFields.style.display = 'none';
+                passengerFields.style.display = 'flex';
+                // Make pilot fields not required
+                document.getElementById('tax_id').required = false;
+                document.getElementById('experience').required = false;
+                // Make passenger fields required
+                document.getElementById('miles').required = true;
+                document.getElementById('funds').required = true;
+                // Clear pilot fields
+                document.getElementById('tax_id').value = '';
+                document.getElementById('experience').value = '';
+            }
+        }
+        
+        // Set initial state
+        toggleFields();
+        
+        // Add event listeners
+        pilotType.addEventListener('change', toggleFields);
+        passengerType.addEventListener('change', toggleFields);
+    });
+</script>
+{% endblock %}

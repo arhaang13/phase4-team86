@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Simple Airline Management System (SAMS)</h1>
+    
+    {% if not db_connected %}
+    <div class="alert alert-warning">
+        Using mock data for demonstration. Database connection unavailable.
+    </div>
+    {% endif %}
+    
+    <h2>Procedures</h2>
+    <div class="list-group mb-4">
+        <a href="{{ url_for('add_airplane') }}" class="list-group-item list-group-item-action">Add Airplane</a>
+        <a href="{{ url_for('add_airport') }}" class="list-group-item list-group-item-action">Add Airport</a>
+        <a href="{{ url_for('add_person') }}" class="list-group-item list-group-item-action">Add Person</a>
+        <a href="{{ url_for('grant_revoke_license') }}" class="list-group-item list-group-item-action">Grant/Revoke Pilot License</a>
+        <a href="{{ url_for('offer_flight') }}" class="list-group-item list-group-item-action">Offer Flight</a>
+        <a href="{{ url_for('flight_takeoff') }}" class="list-group-item list-group-item-action">Flight Takeoff</a>
+        <a href="{{ url_for('flight_landing') }}" class="list-group-item list-group-item-action">Flight Landing</a>
+        <a href="{{ url_for('passengers_board') }}" class="list-group-item list-group-item-action">Passengers Board</a>
+        <a href="{{ url_for('passengers_disembark') }}" class="list-group-item list-group-item-action">Passengers Disembark</a>
+        <a href="{{ url_for('assign_pilot') }}" class="list-group-item list-group-item-action">Assign Pilot</a>
+        <a href="{{ url_for('recycle_crew') }}" class="list-group-item list-group-item-action">Recycle Crew</a>
+        <a href="{{ url_for('retire_flight') }}" class="list-group-item list-group-item-action">Retire Flight</a>
+        <a href="{{ url_for('simulation_cycle') }}" class="list-group-item list-group-item-action">Simulation Cycle</a>
+    </div>
+    
+    <h2>Views</h2>
+    <div class="list-group">
+        <a href="{{ url_for('flights_in_air') }}" class="list-group-item list-group-item-action">Flights in the Air</a>
+        <a href="{{ url_for('flights_on_ground') }}" class="list-group-item list-group-item-action">Flights on Ground</a>
+        <a href="{{ url_for('people_in_air') }}" class="list-group-item list-group-item-action">People in the Air</a>
+        <a href="{{ url_for('people_on_ground') }}" class="list-group-item list-group-item-action">People on Ground</a>
+        <a href="{{ url_for('route_summary') }}" class="list-group-item list-group-item-action">Route Summary</a>
+        <a href="{{ url_for('alternative_airports') }}" class="list-group-item list-group-item-action">Alternative Airports</a>
+    </div>
+</div>
+{% endblock %}

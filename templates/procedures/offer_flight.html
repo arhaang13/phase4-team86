@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Offer Flight - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Procedure: Offer Flight</h2>
+        <p class="text-muted">offer_flight()</p>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('offer_flight') }}">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="flight_id" class="form-label">Flight ID</label>
+                    <input type="text" class="form-control" id="flight_id" name="flight_id" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="route_id" class="form-label">Route ID</label>
+                    <select class="form-select" id="route_id" name="route_id" required>
+                        <option value="">Select Route</option>
+                        {% for route in routes %}
+                        <option value="{{ route.routeID }}">{{ route.routeID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="support_airline" class="form-label">Support Airline</label>
+                    <select class="form-select" id="airline_id" name="support_airline" required>
+                        <option value="">Select Airline</option>
+                        {% for airline in airlines %}
+                        <option value="{{ airline.airlineID }}">{{ airline.airlineID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="progress" class="form-label">Progress</label>
+                    <input type="number" class="form-control" id="progress" name="progress" min="0" value="0" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="next_time" class="form-label">Next Time</label>
+                    <input type="time" class="form-control" id="next_time" name="next_time" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="support_tail" class="form-label">Support Tail</label>
+                    <select class="form-select" id="support_tail" name="support_tail" required>
+                        <option value="">Select Tail Number</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="cost" class="form-label">Cost</label>
+                    <input type="number" class="form-control" id="cost" name="cost" min="0" required>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

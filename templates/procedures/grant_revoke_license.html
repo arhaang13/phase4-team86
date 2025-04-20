@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Grant or Revoke Pilot License - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Procedure: Grant or Revoke Pilot License</h2>
+        <p class="text-muted">grant_or_revoke_pilot_license()</p>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('grant_revoke_license') }}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="person_id" class="form-label">Person ID</label>
+                    <select class="form-select" id="person_id" name="person_id" required>
+                        <option value="">Select Pilot</option>
+                        {% for pilot in pilots %}
+                        <option value="{{ pilot.personID }}">{{ pilot.personID }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="license" class="form-label">License</label>
+                    <select class="form-select" id="license" name="license" required>
+                        <option value="">Select License Type</option>
+                        {% for license in license_types %}
+                        <option value="{{ license }}">{{ license }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add / Revoke</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

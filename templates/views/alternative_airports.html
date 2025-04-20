@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Alternative Airports - Simple Airline Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>View: Alternative Airports</h2>
+        <p class="text-muted mb-0">alternative_airports()</p>
+    </div>
+    <div class="card-body">
+        {% if results and results|length > 0 %}
+            <div class="table-responsive">
+                <table class="table data-table">
+                    <thead>
+                        <tr>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Country</th>
+                            <th>Number of Airports</th>
+                            <th>Airport Code List</th>
+                            <th>Airport Names List</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                            <tr>
+                                <td>{{ row.city }}</td>
+                                <td>{{ row.state }}</td>
+                                <td>{{ row.country }}</td>
+                                <td>{{ row.num_airports }}</td>
+                                <td>{{ row.airport_code_list }}</td>
+                                <td>{{ row.airport_names_list }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">No alternative airports available.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
