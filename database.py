@@ -1,104 +1,76 @@
 import mysql.connector
-from mysql.connector import Error
 
-# Hard-coded database configuration
-DB_HOST = "127.0.0.1"
-DB_USER = "root"
-DB_PASSWORD = ""  # Empty string for no password
-DB_NAME = "flight_tracking"
-
-def test_db_connection():
-    """Tests the database connection and returns True if successful, False otherwise"""
-    try:
-        connection = get_db_connection()
-        if connection:
-            connection.close()
-            return True
-        return False
-    except Exception:
-        return False
+DB_CONFIG = {
+    "host": "127.0.0.1",
+    "user": "root",
+    "password": "",
+    "database": "flight_tracking"
+}
 
 def get_db_connection():
-    """Establishes a connection to the MySQL database"""
-    try:
-        # Connect to MySQL
-        connection = mysql.connector.connect(
-            host=DB_HOST,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME
-        )
-        
-        return connection
-    except Error as e:
-        print(f"Error connecting to database: {e}")
-        raise
+    return mysql.connector.connect(**DB_CONFIG)
 
-def execute_procedure(procedure_name, params=None):
-    """Executes a MySQL stored procedure with the given parameters"""
-    connection = None
+def test_db_connection():
+    try:
+        conn = get_db_connection()
+        conn.close()
+        return True
+    except:
+        return False
+
+def execute_query(query, params=None):
+    conn = None
     cursor = None
     try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
         
-        # Call the stored procedure
+        cursor.execute(query, params) if params else cursor.execute(query)
+        
+        try:
+            return cursor.fetchall()
+        except:
+            conn.commit()
+            return []
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Query error: {e}")
+        raise
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def execute_procedure(procedure_name, params=None):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
         if params:
-            param_placeholders = ', '.join(['%s' for _ in range(len(params))])
-            query = f"CALL {procedure_name}({param_placeholders})"
-            cursor.execute(query, params)
+            placeholders = ', '.join(['%s'] * len(params))
+            cursor.execute(f"CALL {procedure_name}({placeholders})", params)
         else:
-            query = f"CALL {procedure_name}()"
-            cursor.execute(query)
+            cursor.execute(f"CALL {procedure_name}()")
             
-        # Get results if any
         results = []
         try:
-            result = cursor.fetchall()
-            if result:
-                results.extend(result)
+            results = cursor.fetchall()
         except:
             pass
             
-        connection.commit()
+        conn.commit()
         return results
     except Exception as e:
-        if connection:
-            connection.rollback()
-        print(f"Error executing procedure {procedure_name}: {e}")
+        if conn:
+            conn.rollback()
+        print(f"Procedure error: {e}")
         raise
     finally:
         if cursor:
             cursor.close()
-        if connection:
-            connection.close()
-
-def execute_query(query, params=None):
-    """Executes a MySQL query with the given parameters"""
-    connection = None
-    cursor = None
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-        
-        if params:
-            cursor.execute(query, params)
-        else:
-            cursor.execute(query)
-        
-        try:
-            result = cursor.fetchall()
-            return result
-        except:
-            connection.commit()
-            return []
-    except Exception as e:
-        if connection:
-            connection.rollback()
-        print(f"Error executing query: {e}")
-        raise
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+        if conn:
+            conn.close()

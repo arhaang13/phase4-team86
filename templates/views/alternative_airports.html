@@ -29,8 +29,28 @@
                                 <td>{{ row.state }}</td>
                                 <td>{{ row.country }}</td>
                                 <td>{{ row.num_airports }}</td>
-                                <td>{{ row.airport_code_list }}</td>
-                                <td>{{ row.airport_names_list }}</td>
+                                <td>
+                                    {% if row.airport_code_list %}
+                                        <ul class="list-unstyled mb-0">
+                                            {% for code in row.airport_code_list %}
+                                                <li>{{ code }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if row.airport_names_list %}
+                                        <ul class="list-unstyled mb-0">
+                                            {% for name in row.airport_names_list %}
+                                                <li>{{ name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -1,53 +1,65 @@
 import os
+import re
 import mysql.connector
 
-# make sure to configure these based on local server before running file
-DB_HOST = "127.0.0.1"
-DB_USER = "root"
-DB_PASSWORD = ""
-DB_NAME = "flight_tracking"
-
-def execute_sql_file(cur, filepath):
-    with open(filepath, 'r', encoding='utf8') as file:
-        sql = file.read()
-        statements = sql.split(';')
-        for statement in statements:
-            statement = statement.strip()
-            if statement:
-                cur.execute(statement)
+DB_CONFIG = {
+    "host": "127.0.0.1",
+    "user": "root",
+    "password": "",
+    "database": "flight_tracking"
+}
 
 def setup_database():
     try:
-        connection = mysql.connector.connect(
-            host=DB_HOST,
-            user=DB_USER,
-            password=DB_PASSWORD
+        conn = mysql.connector.connect(
+            host=DB_CONFIG["host"],
+            user=DB_CONFIG["user"],
+            password=DB_CONFIG["password"]
         )
-        cur = connection.cursor()
-        print("Creating and using database...")
-        cur.execute(f"DROP DATABASE IF EXISTS {DB_NAME}")
-        cur.execute(f"CREATE DATABASE {DB_NAME}")
-        cur.execute(f"USE {DB_NAME}")
+        cur = conn.cursor()
 
-        base_path = os.path.join(os.path.dirname(__file__), "sql")
-        print("→ Executing schema.sql...")
-        execute_sql_file(cur, os.path.join(base_path, "schema.sql"))
+        cur.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_CONFIG['database']}`")
+        cur.execute(f"USE `{DB_CONFIG['database']}`")
 
-        print("Executing procedures.sql...")
-        execute_sql_file(cur, os.path.join(base_path, "procedures.sql"))
-
-        connection.commit()
-        cur.close()
-        connection.close()
-        return True
+        base_dir = os.path.dirname(__file__)
         
-    except mysql.connector.Error as e:
+        with open(os.path.join(base_dir, "sql", "schema.sql"), 'r', encoding='utf8') as f:
+            schema_sql = f.read()
+            
+        for result in cur.execute(schema_sql, multi=True):
+            if result.with_rows:
+                result.fetchall()
+        
+        with open(os.path.join(base_dir, "sql", "procedures.sql"), 'r', encoding='utf8') as f:
+            raw = f.read()
+        # remove client side delimiter for mysql connector
+        cleaned = re.sub(r'(?mi)^\s*delimiter\b.*$', '', raw)
+        parts = cleaned.split('//')
+
+        for part in parts:
+            block = part.strip()
+            if not block or re.fullmatch(r'(?i)\s*end;?\s*', block):
+                continue
+                
+            if not block.endswith(';'):
+                block += ';'
+                
+            for result in cur.execute(block, multi=True):
+                if result.with_rows:
+                    result.fetchall()
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True
+
+    except Exception as e:
         print(f"Database setup error: {e}")
         return False
 
 if __name__ == "__main__":
-    print("=== flight_tracking: database setup ===")
+    print("Setting up flight_tracking database...")
     if setup_database():
-        print("Setup complete. Can now run the app.")
+        print("Setup complete.")
     else:
         print("Setup failed.")

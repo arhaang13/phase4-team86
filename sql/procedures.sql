@@ -1,3 +1,4 @@
+
 -- CS4400: Introduction to Database Systems: Monday, March 3, 2025
 -- Simple Airline Management System Course Project Mechanics [TEMPLATE] (v0)
 -- Views, Functions & Stored Procedures
@@ -53,12 +54,6 @@ create procedure add_airplane (in ip_airlineID varchar(50), in ip_tail_num varch
     in ip_plane_type varchar(100), in ip_maintenanced boolean, in ip_model varchar(50),
     in ip_neo boolean)
 sp_main: begin
-
-	-- Ensure that the plane type is valid: Boeing, Airbus, or neither
-    -- Ensure that the type-specific attributes are accurate for the type
-    -- Ensure that the airplane and location values are new and unique
-    -- Add airplane and location into respective tables
-    
     if (select count(*) from airplane 
         where airlineID = ip_airlineID and tail_num = ip_tail_num) > 0 then
 		leave sp_main;
@@ -95,7 +90,6 @@ sp_main: begin
 		   case when ip_plane_type = 'boeing' then ip_maintenanced else null end,
 		   case when ip_plane_type = 'boeing' then ip_model else null end,
 		   case when ip_plane_type = 'airbus' then ip_neo else null end);
-
 end //
 delimiter ;
 
@@ -785,77 +779,63 @@ drop procedure if exists simulation_cycle;
 delimiter //
 create procedure simulation_cycle ()
 sp_main: begin
-declare flight_to_process varchar(50);
-    declare state_of_flight varchar(20);
-    declare num_legs int;
-    declare current_leg int;
-    declare route_id varchar(50);
+    declare nextflightid varchar(50);
+    declare flightstatus varchar(50);
+    declare flightroute varchar(50);
+    declare flightprogress int;
+    declare totallegs int default 0;
     
-    -- Identify the next flight to be processed
-    -- Order by: next_time (earliest first)
-    -- If tie: landing (in_flight) before taking off (on_ground)
-    -- If still tie: alphabetically by flightID
-    select flightID
-    into flight_to_process
+    -- identify the next flight to be processed
+    select flightid, airplane_status
+    into nextflightid, flightstatus
     from flight
     where next_time is not null
-    order by next_time asc, 
-             case airplane_status when 'in_flight' then 0 else 1 end, 
-             flightID asc
+    order by 
+        next_time asc,
+        case when airplane_status = 'in_flight' then 0 else 1 end,
+        flightid asc
     limit 1;
     
-    -- Exit if no flights to process
-    if flight_to_process is null then
+    if nextflightid is null then
         leave sp_main;
     end if;
     
-    -- Get current flight status and details
-    select airplane_status, routeID, progress
-    into state_of_flight, route_id, current_leg
+    select progress, routeid
+    into flightprogress, flightroute
     from flight
-    where flightID = flight_to_process;
+    where flightid = nextflightid;
     
-    -- Get total number of legs in the route
-    select max(sequence)
-    into num_legs
+    select count(*)
+    into totallegs
     from route_path
-    where routeID = route_id;
+    where routeid = flightroute;
     
-    -- Process flight based on its current state
-    if state_of_flight = 'in_flight' then
-        -- Land the flight
-        call flight_landing(flight_to_process);
+    if flightstatus = 'in_flight' then
+        call flight_landing(nextflightid);
+        call passengers_disembark(nextflightid);
         
-        -- Allow passengers to disembark
-        call passengers_disembark(flight_to_process);
-        
-        -- Re-fetch the progress after landing since it changed
+        -- check if flight ended
         select progress
-        into current_leg
+        into flightprogress
         from flight
-        where flightID = flight_to_process;
+        where flightid = nextflightid;
         
-        -- Check if flight has reached the end of its route
-        if current_leg >= num_legs then
-            -- Recycle the crew for rest
-            call recycle_crew(flight_to_process);
-            
-            -- Retire the flight from the system
-            call retire_flight(flight_to_process);
+        if flightprogress >= totallegs then
+            call recycle_crew(nextflightid);
+            call retire_flight(nextflightid);
         end if;
-    else -- flight is on_ground
-        -- Board passengers for the next leg
-        call passengers_board(flight_to_process);
-        
-        -- Takeoff for next destination
-        call flight_takeoff(flight_to_process);
+    elseif flightstatus = 'on_ground' then
+        if flightprogress >= totallegs then
+            call recycle_crew(nextflightid);
+            call retire_flight(nextflightid);
+        else
+            call passengers_board(nextflightid);
+            call flight_takeoff(nextflightid);
+        end if;
     end if;
 end //
 delimiter ;
 
-
-end //
-delimiter ;
 
 -- [14] flights_in_the_air()
 -- -----------------------------------------------------------------------------
@@ -993,8 +973,7 @@ airport codes and airport names that are shared both by airport ID. */
 -- -----------------------------------------------------------------------------
 create or replace view alternative_airports (city, state, country, num_airports,
 	airport_code_list, airport_name_list) as
--- select '_', '_', '_', '_', '_', '_';
-select a.city, a.state, a.country, count(*), group_concat(a.airportID separator ','), group_concat(airport_name separator ',')
-from airport a
-group by a.city, a.state, a.country having count(*) > 1;
-
+select city, state, country, count(*) as num_airports, group_concat(airportID order by airportID) as airport_code_list,
+group_concat(airport_name order by airportID) as airport_name_list
+from airport group by city, state, country
+having count(*) > 1;

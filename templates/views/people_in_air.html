@@ -16,15 +16,15 @@
                         <tr>
                             <th>Departing From</th>
                             <th>Arriving At</th>
-                            <th>Number of Airplanes</th>
+                            <th>Num Airplanes</th>
                             <th>Airplane List</th>
                             <th>Flight List</th>
                             <th>Earliest Arrival</th>
                             <th>Latest Arrival</th>
-                            <th>Number of Pilots</th>
-                            <th>Number of Passengers</th>
-                            <th>Joint Pilots & Passengers</th>
-                            <th>Persons List</th>
+                            <th>Num Pilots</th>
+                            <th>Num Passengers</th>
+                            <th>Total People</th>
+                            <th>Person List</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,14 +40,24 @@
                                 <td>{{ row.num_pilots }}</td>
                                 <td>{{ row.num_passengers }}</td>
                                 <td>{{ row.joint_pilots_passengers }}</td>
-                                <td>{{ row.persons_list }}</td>
+                                <td>
+                                    {% if row.person_list %}
+                                        <ul class="list-unstyled mb-0">
+                                            {% for person in row.person_list %}
+                                                <li>{{ person }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         {% else %}
-            <div class="alert alert-info">No people are currently in the air.</div>
+            <div class="alert alert-info">No people in the air.</div>
         {% endif %}
     </div>
 </div>
